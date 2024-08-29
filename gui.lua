@@ -1,8 +1,3 @@
--- Função para modificar funções potencialmente perigosas ou restritas
-local function modifyFunctions()
-    local Players = game:GetService("Players")
-    local Player = Players.LocalPlayer
-
 repeat
     wait()
 until game:IsLoaded()
@@ -11,7 +6,7 @@ wait()
 -- Not my adonis bypasses - Everything else made by me (OneFool)
 for _, v in pairs(getgc(true)) do
     if pcall(function() return rawget(v, "indexInstance") end) and type(rawget(v, "indexInstance")) == "table" and (rawget(v, "indexInstance"))[1] == "kick" then
-        v.tvk = { "kick", function() return game.Workspace:WaitForChild("") end }
+        v.tvk = { "kick", function() return game.Workspace:WaitForChild("Player.Character") end }
     end
 end
 

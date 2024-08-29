@@ -1,10 +1,3 @@
--- Espera até que o jogo esteja completamente carregado
-repeat
-    task.wait()
-until game:IsLoaded()
-task.wait()
-
--- Função para verificar e modificar funções específicas
 local function modifyFunctions()
     local Players = game:GetService("Players")
     local Player = Players.LocalPlayer

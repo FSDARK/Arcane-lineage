@@ -1,26 +1,34 @@
+-- Espera até que o jogo esteja completamente carregado
 repeat
     wait()
 until game:IsLoaded()
 wait()
--- Not my adonis bypasses - Everything else made by me (OneFool)
-for _, v in pairs(getgc(true)) do
-    if pcall(function() return rawget(v, "indexInstance") end) and type(rawget(v, "indexInstance")) == "table" and (rawget(v, "indexInstance"))[1] == "kick" then
-        v.tvk = { "kick", function() return game.Workspace:WaitForChild("") end }
-    end
-end
 
-for _, v in next, getgc() do
-    if typeof(v) == "function" and islclosure(v) and not isexecutorclosure(v) then
-        local Constants = debug.getconstants(v)
-        if table.find(Constants, "Detected") and table.find(Constants, "crash") then
-            setthreadidentity(2)
-            hookfunction(v, function()
-                return task.wait(9e9)
-            end)
-            setthreadidentity(7)
+-- Função para verificar e modificar funções específicas
+local function modifyFunctions()
+    for _, v in pairs(getgc(true)) do
+        local success, indexInstance = pcall(function() return rawget(v, "indexInstance") end)
+        if success and type(indexInstance) == "table" and indexInstance[1] == "kick" then
+            v.tvk = { "kick", function() return game.Workspace:WaitForChild("") end }
+        end
+    end
+
+    for _, v in next, getgc() do
+        if typeof(v) == "function" and islclosure(v) and not isexecutorclosure(v) then
+            local constants = debug.getconstants(v)
+            if table.find(constants, "Detected") and table.find(constants, "crash") then
+                setthreadidentity(2)
+                hookfunction(v, function()
+                    return task.wait(9e9)
+                end)
+                setthreadidentity(7)
+            end
         end
     end
 end
+
+-- Chama a função para modificar as funções específicas
+modifyFunctions()
 
 -- Adiciona o serviço de Gui e o serviço de Players
 local Players = game:GetService("Players")
@@ -73,7 +81,7 @@ RejoinButton.Parent = MiscFrame
 
 RejoinButton.MouseButton1Click:Connect(function()
     local TeleportService = game:GetService("TeleportService")
-    local PlaceId = 10595058975
+    local PlaceId = game.PlaceId
     local JobId = game.JobId
     TeleportService:TeleportToPlaceInstance(PlaceId, JobId, Player)
 end)

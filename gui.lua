@@ -3,34 +3,30 @@ local function modifyFunctions()
     local Players = game:GetService("Players")
     local Player = Players.LocalPlayer
 
-    -- Loop para procurar e modificar funções no registro de debug
-    for _, v in pairs(debug.getregistry()) do
-        if type(v) == "table" and rawget(v, "indexInstance") then
-            local indexInstance = rawget(v, "indexInstance")
-            if type(indexInstance) == "table" and indexInstance[1] == "kick" then
-                v.tvk = { "kick", function() return Player.Character or Player.CharacterAdded:Wait() end }
-            end
-        end
-    end
+repeat
+    wait()
+until game:IsLoaded()
+wait()
 
-    for _, v in pairs(debug.getregistry()) do
-        if type(v) == "function" then
-            local constants = debug.getconstants(v)
-            if table.find(constants, "Detected") and table.find(constants, "crash") then
-                debug.sethook(v, function()
-                    return task.wait(9e9)
-                end, "c")
-            end
-        end
+-- Not my adonis bypasses - Everything else made by me (OneFool)
+for _, v in pairs(getgc(true)) do
+    if pcall(function() return rawget(v, "indexInstance") end) and type(rawget(v, "indexInstance")) == "table" and (rawget(v, "indexInstance"))[1] == "kick" then
+        v.tvk = { "kick", function() return game.Workspace:WaitForChild("") end }
     end
 end
 
--- Tente executar a função modifyFunctions, mas ignore qualquer erro que ela possa gerar
-local success, err = pcall(modifyFunctions)
-if not success then
-    warn("Falha ao modificar funções de debug: ", err)
-end
-
+for _, v in next, getgc() do
+    if typeof(v) == "function" and islclosure(v) and not isexecutorclosure(v) then
+        local Constants = debug.getconstants(v)
+        if table.find(Constants, "Detected") and table.find(Constants, "crash") then
+            setthreadidentity(2)
+            hookfunction(v, function()
+                return task.wait(9e9)
+            end)
+            setthreadidentity(7)
+        end
+    end
+    end
 -- Configuração da interface gráfica
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer

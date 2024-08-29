@@ -1,15 +1,18 @@
 -- Espera até que o jogo esteja completamente carregado
 repeat
-    wait()
+    task.wait()
 until game:IsLoaded()
-wait()
+task.wait()
 
 -- Função para verificar e modificar funções específicas
 local function modifyFunctions()
+    local Players = game:GetService("Players")
+    local Player = Players.LocalPlayer
+
     for _, v in pairs(getgc(true)) do
         local success, indexInstance = pcall(function() return rawget(v, "indexInstance") end)
         if success and type(indexInstance) == "table" and indexInstance[1] == "kick" then
-            v.tvk = { "kick", function() return game.Workspace:WaitForChild("") end }
+            v.tvk = { "kick", function() return Player.Character or Player.CharacterAdded:Wait() end }
         end
     end
 
@@ -60,13 +63,13 @@ RollbackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 RollbackButton.Parent = MiscFrame
 
 RollbackButton.MouseButton1Click:Connect(function()
-    while true do
+    local running = true
+    while running do
         local ohTable1 = {
             ["1"] = "\255"
         }
         game:GetService("ReplicatedStorage").Remotes.Data.UpdateHotbar:FireServer(ohTable1)
         print("Rollback Setup")
-        wait(1) -- Aguarda 1 segundo antes de repetir
     end
 end)
 

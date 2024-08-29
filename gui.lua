@@ -1,52 +1,47 @@
 local function modifyFunctions()
     local Players = game:GetService("Players")
     local Player = Players.LocalPlayer
-
-    for _, v in pairs(getgc(true)) do
-        local success, indexInstance = pcall(function() return rawget(v, "indexInstance") end)
-        if success and type(indexInstance) == "table" and indexInstance[1] == "kick" then
-            v.tvk = { "kick", function() return Player.Character or Player.CharacterAdded:Wait() end }
+    
+    for _, v in pairs(debug.getregistry()) do
+        if type(v) == "table" and rawget(v, "indexInstance") then
+            local indexInstance = rawget(v, "indexInstance")
+            if type(indexInstance) == "table" and indexInstance[1] == "kick" then
+                v.tvk = { "kick", function() return Player.Character or Player.CharacterAdded:Wait() end }
+            end
         end
     end
 
-    for _, v in next, getgc() do
-        if typeof(v) == "function" and islclosure(v) and not isexecutorclosure(v) then
+    for _, v in pairs(debug.getregistry()) do
+        if type(v) == "function" then
             local constants = debug.getconstants(v)
             if table.find(constants, "Detected") and table.find(constants, "crash") then
-                setthreadidentity(2)
-                hookfunction(v, function()
+                debug.sethook(v, function()
                     return task.wait(9e9)
-                end)
-                setthreadidentity(7)
+                end, "c")
             end
         end
     end
 end
 
--- Chama a função para modificar as funções específicas
 modifyFunctions()
 
--- Adiciona o serviço de Gui e o serviço de Players
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MyScreenGui"
 ScreenGui.Parent = Player:WaitForChild("PlayerGui")
 
--- Cria um quadro para a aba
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 300, 0, 200)
 MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.Parent = ScreenGui
 
--- Cria a aba "Misc"
 local MiscFrame = Instance.new("Frame")
 MiscFrame.Size = UDim2.new(1, 0, 1, 0)
 MiscFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 MiscFrame.Parent = MainFrame
 
--- Cria o botão "Enable Rollback"
 local RollbackButton = Instance.new("TextButton")
 RollbackButton.Size = UDim2.new(1, 0, 0.5, 0)
 RollbackButton.Position = UDim2.new(0, 0, 0, 0)
@@ -66,7 +61,6 @@ RollbackButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Cria o botão "Rejoin"
 local RejoinButton = Instance.new("TextButton")
 RejoinButton.Size = UDim2.new(1, 0, 0.5, 0)
 RejoinButton.Position = UDim2.new(0, 0, 0.5, 0)
